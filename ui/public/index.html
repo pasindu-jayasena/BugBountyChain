@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BugBountyChain</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
+  </head>
+  <body>
+    <div class="bg-grid" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <div>
+          <strong>BugBountyChain</strong>
+          <span>Security bounty escrow</span>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <button type="button" class="nav-link active" data-view="market">Market</button>
+        <button type="button" class="nav-link" data-view="create">Create</button>
+        <button type="button" class="nav-link" data-view="workspace">Workspace</button>
+      </nav>
+
+      <div class="wallet-box">
+        <div class="wallet-chip" id="walletMeta" hidden>
+          <span class="dot" aria-hidden="true"></span>
+          <div>
+            <small id="networkLabel">Hardhat Local</small>
+            <strong id="addressLabel">—</strong>
+          </div>
+          <em id="balanceLabel">— ETH</em>
+        </div>
+        <button type="button" class="btn btn-primary" id="connectBtn">Connect MetaMask</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" id="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Ethereum escrow for responsible disclosure</p>
+          <h1>BugBountyChain</h1>
+          <p class="lede">
+            Lock reward funds on-chain. Researchers commit a report hash without revealing
+            the vulnerability. Maintainers release payment only after verification.
+          </p>
+          <div class="hero-actions">
+            <button type="button" class="btn btn-primary" id="heroConnectBtn">Connect MetaMask</button>
+            <button type="button" class="btn btn-ghost" data-view-jump="create">Create a program</button>
+          </div>
+        </div>
+        <aside class="hero-stats" aria-label="Protocol summary">
+          <div>
+            <span>Commitment</span>
+            <strong>SHA-256</strong>
+          </div>
+          <div>
+            <span>Settlement</span>
+            <strong>Escrow payout</strong>
+          </div>
+          <div>
+            <span>Privacy</span>
+            <strong>Report off-chain</strong>
+          </div>
+        </aside>
+      </section>
+
+      <section class="view active" id="view-market" aria-label="Bounty market">
+        <div class="section-head">
+          <div>
+            <h2>Bounty market</h2>
+            <p>Funded programs currently registered in the escrow contract</p>
+          </div>
+          <div class="filters">
+            <select id="statusFilter">
+              <option value="all">All statuses</option>
+              <option value="0">Active</option>
+              <option value="1">Under review</option>
+              <option value="2">Resolved</option>
+              <option value="3">Cancelled</option>
+            </select>
+            <button type="button" class="btn btn-ghost" id="refreshBtn">Refresh</button>
+          </div>
+        </div>
+        <div class="bounty-grid" id="bountyGrid">
+          <div class="empty-state">Connect MetaMask to load on-chain bounty programs.</div>
+        </div>
+      </section>
+
+      <section class="view" id="view-create" aria-label="Create bounty">
+        <div class="form-shell">
+          <div class="form-head">
+            <h2>Create bounty program</h2>
+            <p>ETH is locked in escrow until a verified claim is paid or the deadline expires.</p>
+          </div>
+          <form id="createForm">
+            <label>
+              Program title
+              <input id="createTitle" type="text" required maxlength="120" placeholder="Authentication API security program" />
+            </label>
+            <label>
+              Scope and rules
+              <textarea id="createDescription" rows="5" required placeholder="In-scope assets, severity expectations, safe harbor notes…"></textarea>
+            </label>
+            <div class="form-row">
+              <label>
+                Duration (days)
+                <input id="createDays" type="number" min="1" value="30" required />
+              </label>
+              <label>
+                Reward (ETH)
+                <input id="createAmount" type="text" value="1.0" required />
+              </label>
+            </div>
+            <button type="submit" class="btn btn-primary" id="createSubmit">Publish &amp; lock funds</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="view" id="view-workspace" aria-label="Workspace">
+        <div class="workspace">
+          <aside class="detail-pane">
+            <h2>Program detail</h2>
+            <p class="muted" id="detailPlaceholder">Select a bounty from Market to inspect status and settle claims.</p>
+            <div id="detailContent" hidden></div>
+          </aside>
+
+          <div class="action-pane">
+            <div class="action-card">
+              <h3>Submit claim</h3>
+              <p>Compute a commitment hash, publish it on-chain, then share the full report privately with the maintainer.</p>
+              <label>
+                Bounty ID
+                <input id="claimBountyId" type="number" min="1" />
+              </label>
+              <label>
+                Finding title
+                <input id="reportTitle" type="text" placeholder="Short title" />
+              </label>
+              <label>
+                Severity
+                <select id="reportSeverity">
+                  <option>critical</option>
+                  <option selected>high</option>
+                  <option>medium</option>
+                  <option>low</option>
+                </select>
+              </label>
+              <label>
+                Technical details
+                <textarea id="reportDetails" rows="4" placeholder="Root cause, impact, reproduction steps…"></textarea>
+              </label>
+              <label>
+                Proof of concept
+                <textarea id="reportPoc" rows="3" placeholder="Payload or reproduction notes"></textarea>
+              </label>
+              <div class="hash-box">
+                <span>Commitment hash</span>
+                <code id="claimHashPreview">—</code>
+              </div>
+              <div class="btn-row">
+                <button type="button" class="btn btn-ghost" id="computeHashBtn">Compute hash</button>
+                <button type="button" class="btn btn-primary" id="submitClaimBtn">Submit claim</button>
+              </div>
+            </div>
+
+            <div class="action-card">
+              <h3>Review &amp; settle</h3>
+              <p>Maintainer actions. Release funds when the off-chain report matches the committed hash.</p>
+              <label>
+                Bounty ID
+                <input id="reviewBountyId" type="number" min="1" />
+              </label>
+              <label>
+                Confirmed report hash
+                <input id="reviewHash" type="text" placeholder="0x…" />
+              </label>
+              <div class="btn-row">
+                <button type="button" class="btn btn-primary" id="releaseBtn">Release payout</button>
+                <button type="button" class="btn btn-danger" id="cancelBtn">Cancel expired</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>BugBountyChain</span>
+      <span>Hardhat · Solidity 0.8.20 · MetaMask</span>
+    </footer>
+
+    <div class="toast-host" id="toastHost" aria-live="polite"></div>
+    <script src="app.js"></script>
+  </body>
+</html>

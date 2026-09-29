@@ -1,0 +1,24 @@
+{
+  "name": "bugbountychain",
+  "version": "1.0.0",
+  "description": "Decentralized bug bounty escrow for EC8204",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "node": "hardhat node",
+    "deploy": "hardhat run scripts/deploy.js --network localhost",
+    "demo": "hardhat run scripts/demo_workflow.js --network localhost",
+    "ui": "node ui/server.js"
+  },
+  "keywords": ["hardhat", "ethereum", "bug-bounty", "escrow"],
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.22.17"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}
