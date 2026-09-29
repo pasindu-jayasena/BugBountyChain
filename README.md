@@ -43,7 +43,6 @@ Open http://localhost:3000 → **Connect MetaMask**.
 Add network in MetaMask: `http://127.0.0.1:8545`, chain id `31337`.  
 Import Hardhat accounts #0 (maintainer) and #1 (researcher).
 
-Full walkthrough and 3-minute video speech: see [`DEMO_GUIDE.md`](DEMO_GUIDE.md).
 
 ## Layout
 
